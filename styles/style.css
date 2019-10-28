@@ -6,12 +6,12 @@
 
 body {
   font-family: 'Nanum Gothic Coding', sans-serif;
-  display: flex;
+  /*display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
   text-align: center;
-  height: 100vh;
+  height: 100vh;*/
   color: black;
   background-size: cover;
 }
@@ -20,6 +20,25 @@ body {
   font-size: 8rem;
 }
 
+#leftColumn {
+    width:29%;
+    display:inline-block;
+    vertical-align:top;
+}
+
+#centerColumn {
+    width:40%;
+    align-items: center;
+    text-align: center;
+    display:inline-block;
+    vertical-align:top;
+}
+
+#rightColumn {
+    width:29%;
+    display:inline-block;
+    vertical-align:top;
+}
 h1 {
   margin-bottom: 3rem;
   white-space: nowrap;
@@ -59,26 +78,44 @@ h3 {
 @media only screen 
     and (device-width: 414px) 
     and (device-height: 896px) 
-    and (-webkit-device-pixel-ratio: 2) { 
-      #time {
-        font-size: 3rem;
-  }        
-
-h1 {
-    font-size: 1rem;
-    margin-bottom: 3rem;
-    white-space: nowrap;
-}
-
-h2 {
-    font-size: 0.75rem;
-    margin-bottom: 0.5rem;
-    opacity: 0.6;
-}
-
-h3 {
-    font-size: 0.625rem;
-    margin-top: 2rem;
-    opacity: 0.6;
-}
+    and (-webkit-device-pixel-ratio: 2) {
+        
+    #time {
+    font-size: 3rem;
     }
+
+    h1 {
+        font-size: 1rem;
+        margin-bottom: 3rem;
+        white-space: nowrap;
+    }
+    
+    h2 {
+        font-size: 0.75rem;
+        margin-bottom: 0.5rem;
+        opacity: 0.6;
+    }
+    
+    h3 {
+        font-size: 0.625rem;
+        margin-top: 2rem;
+        opacity: 0.6;
+    }
+
+#leftColumn {
+    display:none;
+}
+
+#centerColumn {
+    width:99%;
+    align-items: center;
+    text-align: center;
+    vertical-align:top;
+}
+
+#rightColumn {
+    width:80%;
+    vertical-align: top;
+    }
+        
+}        

@@ -1,25 +1,27 @@
 console.log("Initialize");
 
-const focus = document.getElementById("focus"),
+const appId = getAppId(),
+      focus = document.getElementById("focus"),
       greeting = document.getElementById("greeting"),
       name = document.getElementById("name"),
       showAmPm = true,
       time = document.getElementById("time"),
-      weather = document.getElementById("weather");
-  
-var lastHour = getLastHour();
-var zip = getZipCode();
-var appId = getAppId();
+      theContainer = document.getElementById("theContainer"),
+      weather = document.getElementById("weather"),
+      zip = getZipCode();
 
 console.log("Function Definitions");
 
 // Show Time
 function showTime() {
   let today = new Date(),
-    hour = today.getHours(),
-    min = today.getMinutes(),
-    sec = today.getSeconds();
-
+       hour = today.getHours(),
+        min = today.getMinutes(),
+        sec = today.getSeconds();
+    
+  var lastHour = getLastHour();
+  //console.log("lastHour: " + lastHour);
+  
   // Set AM or PM
   const amPm = hour >= 12 ? "PM" : "AM";
   
@@ -29,12 +31,14 @@ function showTime() {
     setBgGreet();
   }
   
-  if (lastHour != hour){
+  if ((lastHour != hour) || ((0 === min % 10) && (1 == sec))){
       getWeather(zip);
+      //console.log("lastHour: " + lastHour + " | hour: " + hour );
   }
 
   setLastHour(hour);
-
+  //console.log("hour: " + hour);
+  
   // 12hr Format
   hour = hour % 12 || 12;
 
@@ -59,14 +63,20 @@ function setBgGreet() {
   if (hour < 12) {
     // Morning
     document.body.style.backgroundImage = "url('images/desktopmorning.jpg')";
+    //document.body.style.backgroundPosition = "center";
+    //document.body.style.backgroundRepeat = "no-repeat";
     greeting.textContent = "Good Morning, ";
   } else if (hour < 18) {
     // Afternoon
     document.body.style.backgroundImage = "url('images/desktopafternoon.jpg')";
+    //document.body.style.backgroundPosition = "center";
+    //document.body.style.backgroundRepeat = "no-repeat";
     greeting.textContent = "Good Afternoon, ";
   } else {
     // Evening
     document.body.style.backgroundImage = "url('images/desktopevening.jpg')";
+    //document.body.style.backgroundPosition = "center";
+    //document.body.style.backgroundRepeat = "no-repeat";
     greeting.textContent = "Good Evening, ";
     document.body.style.color = "white";
   }
@@ -125,9 +135,27 @@ function getLastHour() {
   }
 }
 
+// Get Last Weather
+function getLastWeather() {
+    
+  console.log("Get Last Weather");
+  if (localStorage.getItem("lastWeather") === null) {
+    return "lastWeather";
+  } else {
+    return localStorage.getItem("lastWeather");
+  }
+}
+
+// Set Last Weather
+function setLastWeather(lw) {
+    
+    console.log("Set Last Weather");
+    localStorage.setItem("lastWeather", lw);
+}
+
 // Get Zip Code
 function getZipCode() {
-  if (localStorage.getItem("lastHour") === null) {
+  if (localStorage.getItem("zip") === null) {
     return "80403";
   } else {
     return localStorage.getItem("zip");
@@ -149,12 +177,16 @@ function setLastHour(tempHour) {
     localStorage.setItem("lastHour", tempHour);
 }
 
-function getWeather(){
+function getWeather(theZip){
 
     console.log("Get Weather");
     
+    var apiString = "https://api.openweathermap.org/data/2.5/weather?zip=" + theZip + ",us&units=imperial&appid=" + appId;
+    
+    //console.log(apiString);
+    
     if (!!appId){
-        $.getJSON("https://api.openweathermap.org/data/2.5/weather?zip=" + zip + ",us&units=imperial&appid=" + appId, weatherCallback);
+        $.getJSON(apiString, weatherCallback);
     }
 }
 
@@ -168,7 +200,29 @@ function weatherCallback(weatherData) {
     var dt = new Date(timestamp * 1000);
     
     weather.title = dt.getHours() + ":" + addZero(dt.getMinutes());
-    weather.innerHTML = cityName + ": " + cityTemp.substring(start, end) + "&deg; / " + cityDescription;
+    weather.innerHTML = cityName + ": " + cityTemp.substring(start, end) + "&deg;/ " + cityDescription;
+    
+    if (cityTemp.substring(start, end) + "|" + cityDescription != getLastWeather()){
+    
+    console.log("Create Weather Block");
+    
+    var lastTemp = cityTemp.substring(start, end);
+    if (getLastWeather().includes("|")) {
+        lastTemp = getLastWeather().substr(0,getLastWeather().indexOf("|"));
+    }
+    
+    var weatherCells = document.getElementsByClassName("weathercell");
+    for(var i = 0; i < weatherCells.length; i++)
+    {
+        weatherCells.item(i).parentNode.removeChild(weatherCells.item(i));
+    }
+    
+    //Function Call
+    theContainer.innerHTML += AddWeatherCell(cityName, cityTemp.substring(start, end), cityDescription, dt, lastTemp);
+    
+    setLastWeather(cityTemp.substring(start, end) + "|" + cityDescription);
+    
+    }
 }
 
 function getSpaceX(){
@@ -191,7 +245,31 @@ function spaceXCallback(spaceXData) {
     var d = new Date(spaceXData.launch_date_local);
 
     spacex.innerHTML = "SpaceX: #" + flightNumber + " - " + missionName + " [" + dayNames[d.getDay()] + " " + monthNames[d.getMonth()] + " " + d.getDate() + " " + d.getHours() + ":" + addZero(d.getMinutes()) + "]";
+    
+    // Function call
+    console.log("Create SpaceX Block");
+    theContainer.innerHTML += AddSpaceCell(flightNumber,missionName,dayNames[d.getDay()] + " " + monthNames[d.getMonth()] + " " + d.getDate() + " " + d.getHours() + ":" + addZero(d.getMinutes()));
 }
+
+   function AddSingleCell(title)
+   {
+      var cell = "<div class=\"item\">" + title + " (<a href=\"#\" style=\"text-decoration: none;\" onclick=\"this.parentElement.style.display = 'none';\">X</a>)</div>";
+      return cell;
+   }
+
+   function AddWeatherCell(location, temp, description, datetime, lastTemp)
+   {
+       var color = "white";
+       color = (lastTemp > temp) ? "deepskyblue" : (temp > lastTemp) ? "red" : "white";
+      var cell = "<div class=\"item weathercell\" title=\"" + datetime.getHours() + ":" + addZero(datetime.getMinutes()) + "\">" + location + ": <span style=\"color:" + color + "\">" + temp + "</span>&deg;/ " + description + " (<a href=\"#\" style=\"text-decoration: none;\" onclick=\"this.parentElement.style.display = 'none';\">X</a>)</div>";
+      return cell;
+   }
+
+   function AddSpaceCell(mission, title, date)
+   {
+      var cell = "<div class=\"item\">SpaceX: " + mission + " - " + title + " [" + date + "] (<a href=\"#\" style=\"text-decoration: none;\" onclick=\"this.parentElement.style.display = 'none';\">X</a>)</div>";
+      return cell;
+   }
 
 name.addEventListener("keypress", setName);
 name.addEventListener("blur", setName);

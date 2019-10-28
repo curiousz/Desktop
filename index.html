@@ -8,17 +8,42 @@
     <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic+Coding&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles/style.css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <style>
+      .topcorner{
+        text-align:left;
+        width:100%;
+      }
+      .item {
+        text-align:left;
+        color:white;
+        width: 100%;
+        background-color:black;
+        margin: 10px;
+        padding: 10px;
+        padding-left: 12px;
+        opacity: 0.6;
+        border-radius: 6px;
+      }
+    </style>
   </head>
   <body>
-    <time id="time"></time>
-    <h1>
-      <span id="greeting"></span>
-      <span id="name" contenteditable="true"></span>
-    </h1>
-    <h2>What Is Your Focus For Today?</h2>
-    <h2 id="focus" contenteditable="true"></h2>
-    <h3 id="weather">[Weather]</h3>
-    <h3 id="spacex">[SpaceX]</h3>
+    <div style="vertical-align:top;">
+      <div id="leftColumn">&nbsp;</div>
+      <div id="centerColumn">
+        <time id="time"></time>
+        <h1>
+          <span id="greeting"></span>
+          <span id="name" contenteditable="true"></span>
+        </h1>
+        <h2>What Is Your Focus For Today?</h2>
+        <h2 id="focus" contenteditable="true"></h2>
+        <h3 id="weather">[Weather]</h3>
+        <h3 id="spacex">[SpaceX]</h3>
+      </div>
+      <div id="rightColumn">
+        <div class="topcorner" id="theContainer"></div>
+      </div>
+    </div>
     <script src="scripts/script.js"></script>
   </body>
 </html>
